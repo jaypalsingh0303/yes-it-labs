@@ -12,3 +12,4 @@ Route::delete("/{id}/delete", [HomeController::class, "delete"])->name("delete")
 
 Route::get("/audio/duration", [HomeController::class, "audio_duration"])->name("audio_duration");
 Route::get("/location/distance", [HomeController::class, "location_distance"])->name("location_distance");
+Route::get("/download/csv", [HomeController::class, "download_csv"])->name("download_csv");

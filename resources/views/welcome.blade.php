@@ -37,6 +37,10 @@
                             </div>
                         @endif
 
+                        <div class="d-flex justify-content-end">
+                            <a href="{{route("download_csv")}}" class="btn btn-primary">Download CSV</a>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -56,7 +60,8 @@
                                             <td>{{$loop->iteration}}</td>
                                             <td>
                                                 <div class="d-flex gap-3">
-                                                    <img src="{{asset("storage/$user->profile")}}" width="40" class="img-fluid" alt="{{$user->name}}">
+                                                    <img src="{{asset("storage/$user->profile")}}" width="40"
+                                                         class="img-fluid" alt="{{$user->name}}">
                                                     <div>
                                                         {{$user->name}}
                                                     </div>
@@ -68,11 +73,13 @@
                                                 <a href="{{route("edit", $user->id)}}" class="btn btn-sm btn-info">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
-                                                <a href="javascript:void(0);" class="btn btn-sm btn-danger" onclick="event.preventDefault(); document.getElementById('delete-{{$user->id}}').submit();">
+                                                <a href="javascript:void(0);" class="btn btn-sm btn-danger"
+                                                   onclick="event.preventDefault(); document.getElementById('delete-{{$user->id}}').submit();">
                                                     <i class="fa fa-trash"></i>
                                                 </a>
 
-                                                <form action="{{ route('delete', $user->id) }}" method="POST" id="delete-{{$user->id}}" style="display:none;">
+                                                <form action="{{ route('delete', $user->id) }}" method="POST"
+                                                      id="delete-{{$user->id}}" style="display:none;">
                                                     @csrf
                                                     @method('DELETE')
                                                 </form>

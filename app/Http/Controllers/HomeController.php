@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use getID3;
 
@@ -79,7 +80,7 @@ class HomeController extends Controller
         $user->save();
 
         if ($request->file("profile")) {
-            if ($user->profile) {
+            if (isset($user->profile) && $user->profile) {
                 if (file_exists(storage_path("app/public/$user->profile"))) {
                     unlink(storage_path("app/public/$user->profile"));
                 }
@@ -100,7 +101,7 @@ class HomeController extends Controller
     {
         $user = User::find($id);
 
-        if ($user->profile) {
+        if (isset($user->profile) && $user->profile) {
             if (file_exists(storage_path("app/public/$user->profile"))) {
                 unlink(storage_path("app/public/$user->profile"));
             }
@@ -110,6 +111,34 @@ class HomeController extends Controller
 
         Session::flash('success', 'User delete successful.');
         return redirect()->route("home");
+    }
+
+    public function download_csv()
+    {
+        $fileName = 'users.csv';
+        $users = User::latest()->get();
+
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+
+        $columns = array('Name', 'Email', 'Mobile Number', 'Created At');
+
+        $callback = function() use($users, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($users as $user) {
+                fputcsv($file, array($user->name, $user->email, $user->mobile_number, date("Y-m-d", strtotime($user->created_at))));
+            }
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, $headers);
     }
 
     public function audio_duration()
@@ -162,7 +191,7 @@ class HomeController extends Controller
         $distance = $earthRadius * $c;
 
         return [
-            "distance" => number_format($distance, 2)." ".$request->input("unit")
+            "distance" => number_format($distance, 2) . " " . $request->input("unit")
         ];
     }
 }
